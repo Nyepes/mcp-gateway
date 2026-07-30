@@ -6,13 +6,15 @@ import (
 	"io"
 )
 
-type JSONRPCReader struct {
+type JSONRPCReader struct{}
 
+func NewJSONRPCReader() *JSONRPCReader {
+	return &JSONRPCReader{}
 }
 
 func (reader *JSONRPCReader) Read(ctx context.Context, input io.Reader, requestChannel chan Request) {
 	decoder := json.NewDecoder(input)
-	
+
 	for {
 		var req Request
 		if err := decoder.Decode(&req); err != nil {

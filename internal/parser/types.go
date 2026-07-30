@@ -11,7 +11,7 @@ type Request struct {
 	Params  json.RawMessage `json:"params,omitempty"`
 }
 
-// Response represents the result coming back from the upstream server
+
 type Response struct {
 	JSONRPC string          `json:"jsonrpc"`
 	ID      any             `json:"id,omitempty"`
