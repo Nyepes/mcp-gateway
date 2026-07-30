@@ -43,7 +43,7 @@ func (server *TCPServer) Start() {
 			// Ignore
 			continue
 		}
-		go server.Handler.HandleConnection(connection)
+		server.Handler.HandleConnection(connection)
 	}
 
 }
