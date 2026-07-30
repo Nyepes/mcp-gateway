@@ -1,37 +1,30 @@
 // ConnectionHandler defines the threading logic connecting receiving a request and processing it
-package ConnectionHandler
+package proxyserver
 
 import (
 	"context"
 	"io"
 	"sync"
+	"mcp-gateway/internal/parser"
 )
-
-type Request interface {
-}
-
-type Response interface {
-}
-
-type Task struct {
-	req             Request
-	responseChannel chan Response
-}
-
-type Engine interface {
-	ProcessTask(Task) Response
-}
-
-type TaskReader interface {
-	Read(context.Context, io.Reader, chan Request)
-}
-
-type ResponseWriter interface {
-	Write(context.Context, io.Writer, chan Response)
-}
 
 // Connection Handler configures how handle a user that connects to a client
 // Creates routines to read from sockets, forward sockets and write back to sockets
+
+type Task struct {
+	req             parser.Request
+	responseChannel chan parser.Response
+}
+
+
+type TaskReader interface {
+	Read(context.Context, io.Reader, chan parser.Request)
+}
+
+type ResponseWriter interface {
+	Write(context.Context, io.Writer, chan parser.Response)
+}
+
 type ProxyServer struct {
 	PendingTasks chan Task
 	NumWorkers   int
@@ -81,8 +74,8 @@ func startWorker(ctx context.Context, engine Engine, taskChannel chan Task) {
 
 func (proxy *ProxyServer) HandleConnection(rw io.ReadWriter) {
 
-	requestChannel := make(chan Request, 50)
-	responseChannel := make(chan Response, 50)
+	requestChannel := make(chan parser.Request, 50)
+	responseChannel := make(chan parser.Response, 50)
 
 	go proxy.Reader.Read(proxy.ctx, rw, requestChannel)
 	go proxy.Writer.Write(proxy.ctx, rw, responseChannel)
